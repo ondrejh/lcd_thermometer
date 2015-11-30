@@ -1,0 +1,8 @@
+*.d
+*.o
+*.cbTemp
+*.layout
+*.elf
+*.hex
+*.map
+project.txt
