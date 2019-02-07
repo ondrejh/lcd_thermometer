@@ -44,7 +44,9 @@
 #include "lcd.h"
 #include "ds18b20.h"
 
-void disp_temp(int temp) {
+// display temperature
+void disp_temp(int temp)
+{
     uint8_t ts=0, t100=0, t10=0, t1=0, t0=0;
     int t = temp;
 
@@ -71,12 +73,21 @@ void disp_temp(int temp) {
     showChar('C', pos6);
 }
 
-void disp_error() {
+// display --- (when error)
+void disp_error()
+{
     showChar(' ', pos2);
     showChar('-', pos3);
     showChar('-', pos4);
     showChar('-', pos5);
     showChar(' ', pos6);
+}
+
+// display sensor number (1st position)
+void disp_num(int n)
+{
+    showChar('0' + (n % 10), pos1);
+    dispWordOR(LCD_DECIMAL, pos1);
 }
 
 // main program body
@@ -87,72 +98,38 @@ int main(void)
 	board_init(); // init dco and leds
 	lcd_init();
 
-	ds18b20_sensor_t s[1];
-	ds18b20_init(&s[0], &P8OUT, &P8IN, &P8REN, &P8DIR, 3);
+	// initialize sensors
+	ds18b20_sensor_t s[6];
+	ds18b20_init(&s[0], &P2OUT, &P2IN, &P2REN, &P2DIR, 7); // sensor 1: P2.7
+	ds18b20_init(&s[1], &P8OUT, &P8IN, &P8REN, &P8DIR, 0); // sensor 2: P8.0
+	ds18b20_init(&s[2], &P5OUT, &P5IN, &P5REN, &P5DIR, 1); // sensor 3: P5.1
+	ds18b20_init(&s[3], &P2OUT, &P2IN, &P2REN, &P2DIR, 5); // sensor 4: P2.5
+	ds18b20_init(&s[4], &P8OUT, &P8IN, &P8REN, &P8DIR, 2); // sensor 5: P8.2
+	ds18b20_init(&s[5], &P8OUT, &P8IN, &P8REN, &P8DIR, 3); // sensor 6: P8.3
+
+    int sn = 0;
 
 	while(1)
 	{
-	    ds18d20_start_conversion(&s[0]);
+	    ds18d20_start_conversion(&s[sn]);
+	    LED_GREEN_ON();
 		__delay_cycles(10000000);
-		ds18b20_read_conversion(&s[0]);
-        showChar('1', pos1);
-        dispWordOR(LCD_DECIMAL, pos1);
-		if (s[0].valid == true) {
-            int t = s[0].data.temp;
+		LED_GREEN_OFF();
+		ds18b20_read_conversion(&s[sn]);
+        disp_num(sn+1);
+		if (s[sn].valid == true) {
+            int t = s[sn].data.temp;
             disp_temp(t);
+            LED_RED_OFF();
 		}
-		else
+		else {
             disp_error();
-		__delay_cycles(10000000);
-		LED_GREEN_SWAP();
-	}
-/*
-	    showChar('H',pos1);
-	    showChar('E',pos2);
-	    showChar('L',pos3);
-	    showChar('L',pos4);
-	    showChar('O',pos5);
-	    showChar(' ',pos6);
-        dispWord(0,symbols);
-
-
-		__delay_cycles(10000000);
-	    showChar(' ',pos1);
-	    showChar('W',pos2);
-	    showChar('O',pos3);
-	    showChar('R',pos4);
-	    showChar('L',pos5);
-	    showChar('D',pos6);
-
-		switch (symbol) {
-        case 0:
-            dispWordOR(LCD_P6_RX|LCD_P6_TX,pos6);
-            dispWordOR(LCD_P3_TRANSMITTER,pos3);
-            break;
-        case 1:
-            dispWord(LCD_HEART,symbols);
-            break;
-        case 2:
-            dispWord(LCD_BANG,symbols);
-            break;
-        case 3:
-            dispWord(LCD_CLOCK,symbols);
-            break;
-        case 4:
-            dispWord(LCD_RSYMBOL,symbols);
-            break;
-        case 5:
-            dispWord(LCD_BATTERY,symbols);
-            break;
+            LED_RED_ON();
 		}
-		symbol++;
-		symbol%=6;
-
-        __delay_cycles(10000000);
-
-        LED_GREEN_SWAP();
-        LED_RED_SWAP();
-	}*/
+		__delay_cycles(10000000);
+		sn ++;
+		sn %= 6;
+	}
 
 	return -1;
 }
