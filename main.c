@@ -42,6 +42,42 @@
 
 #include "board.h"
 #include "lcd.h"
+#include "ds18b20.h"
+
+void disp_temp(int temp) {
+    uint8_t ts=0, t100=0, t10=0, t1=0, t0=0;
+    int t = temp;
+
+    if (t < 0) {t = -t; ts = 1;}
+    t100 = t/2000;
+    t %= 2000;
+    t10 = t/200;
+    t %= 200;
+    t1 = t/20;
+    t %= 20;
+    t0 = t/2;
+    if (t&1) t0 ++;
+
+    if (ts & t10) showChar('-', pos2);
+    else if (t100) showChar('0' + t100, pos2);
+    else showChar(' ', pos2);
+    if (t100 || t10) showChar('0' + t10, pos3);
+    else if (ts & (t10==0)) showChar('-', pos3);
+    else showChar(' ', pos3);
+    showChar('0' + t1, pos4);
+    dispWordOR(LCD_DECIMAL, pos4);
+    showChar('0' + t0, pos5);
+    dispWordOR(LCD_P5_DEGREE, pos5);
+    showChar('C', pos6);
+}
+
+void disp_error() {
+    showChar(' ', pos2);
+    showChar('-', pos3);
+    showChar('-', pos4);
+    showChar('-', pos5);
+    showChar(' ', pos6);
+}
 
 // main program body
 int main(void)
@@ -51,12 +87,26 @@ int main(void)
 	board_init(); // init dco and leds
 	lcd_init();
 
-	LED_RED_ON();
-
-	int symbol = 0;
+	ds18b20_sensor_t s[1];
+	ds18b20_init(&s[0], &P8OUT, &P8IN, &P8REN, &P8DIR, 3);
 
 	while(1)
 	{
+	    ds18d20_start_conversion(&s[0]);
+		__delay_cycles(10000000);
+		ds18b20_read_conversion(&s[0]);
+        showChar('1', pos1);
+        dispWordOR(LCD_DECIMAL, pos1);
+		if (s[0].valid == true) {
+            int t = s[0].data.temp;
+            disp_temp(t);
+		}
+		else
+            disp_error();
+		__delay_cycles(10000000);
+		LED_GREEN_SWAP();
+	}
+/*
 	    showChar('H',pos1);
 	    showChar('E',pos2);
 	    showChar('L',pos3);
@@ -64,8 +114,9 @@ int main(void)
 	    showChar('O',pos5);
 	    showChar(' ',pos6);
         dispWord(0,symbols);
-		__delay_cycles(10000000);
 
+
+		__delay_cycles(10000000);
 	    showChar(' ',pos1);
 	    showChar('W',pos2);
 	    showChar('O',pos3);
@@ -101,7 +152,7 @@ int main(void)
 
         LED_GREEN_SWAP();
         LED_RED_SWAP();
-	}
+	}*/
 
 	return -1;
 }

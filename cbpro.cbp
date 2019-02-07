@@ -28,6 +28,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="board.h" />
+		<Unit filename="crc8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="crc8.h" />
+		<Unit filename="ds18b20.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ds18b20.h" />
 		<Unit filename="lcd.c">
 			<Option compilerVar="CC" />
 		</Unit>

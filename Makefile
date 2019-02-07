@@ -12,7 +12,7 @@ TARGET     = project
 MCU        = msp430fr4133
 # List all the source files here
 # eg if you have a source file foo.c then list it here
-SOURCES = main.c board.c lcd.c lcd_e.c
+SOURCES = main.c board.c lcd.c lcd_e.c ds18b20.c crc8.c
 # Include are located in the Include directory
 INCLUDES = -IInclude
 # Add or subtract whatever MSPGCC flags you want. There are plenty more
@@ -42,7 +42,8 @@ DEPEND = $(SOURCES:.c=.d)
 # all the object files
 OBJECTS = $(SOURCES:.c=.o)
 Release: all
-all: $(TARGET).elf $(TARGET).hex $(TARGET).txt
+all: $(TARGET).elf $(TARGET).hex
+#all: $(TARGET).elf $(TARGET).hex $(TARGET).txt
 $(TARGET).elf: $(OBJECTS)
 	echo "Linking $@"
 	$(CC) $(OBJECTS) $(LDFLAGS) $(LIBS) -o $@

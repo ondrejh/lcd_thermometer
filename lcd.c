@@ -43,6 +43,8 @@ const uint16_t alphaW[26] = {0x00EF,  // A
                              0xB000,  // Y
                              0x2890}; // Z
 
+const uint16_t minusSymbol = 0x0003;
+
 void lcd_init(void)
 {
     // L0~L26 & L36~L39 pins selected
@@ -147,6 +149,11 @@ void showChar(char c, int position)
     {
         // Display alphabet
         LCDMEMW[position/2] = alphaW[c-'A'];
+    }
+    else if (c == '-')
+    {
+        // Display '-'
+        LCDMEMW[position/2] = minusSymbol;
     }
     else
     {
