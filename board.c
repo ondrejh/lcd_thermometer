@@ -35,5 +35,6 @@ void board_init(void)
 
 	LED_INIT(); // leds
 	BTN_INIT(); // buttons
+	OUT_INIT();
 }
 

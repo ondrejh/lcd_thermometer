@@ -15,6 +15,16 @@
 #define BTN1 ((P1IN&0x04)==0)
 #define BTN2 ((P2IN&0x40)==0)
 
+#define OUT_INIT() do{P1DIR|=0xF8;P5DIR|=0x0D;}while(0)
+#define OUT1(x) do{if (x) P1OUT|=0x80; else P1OUT&=~0x80;}while(0)
+#define OUT2(x) do{if (x) P1OUT|=0x40; else P1OUT&=~0x40;}while(0)
+#define OUT3(x) do{if (x) P5OUT|=0x01; else P5OUT&=~0x01;}while(0)
+#define OUT4(x) do{if (x) P1OUT|=0x20; else P1OUT&=~0x20;}while(0)
+#define OUT5(x) do{if (x) P1OUT|=0x10; else P1OUT&=~0x10;}while(0)
+#define OUT6(x) do{if (x) P1OUT|=0x08; else P1OUT&=~0x08;}while(0)
+#define OUT7(x) do{if (x) P5OUT|=0x08; else P5OUT&=~0x08;}while(0)
+#define OUT8(x) do{if (x) P5OUT|=0x04; else P5OUT&=~0x04;}while(0)
+
 void board_init(void);
 
 #endif // __BOARD_H__

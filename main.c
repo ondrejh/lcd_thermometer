@@ -91,6 +91,21 @@ void disp_num(int n)
     dispWordOR(LCD_DECIMAL, pos1);
 }
 
+void out_set(int n, bool s)
+{
+    switch (n) {
+    case 0: OUT1(s); break;
+    case 1: OUT2(s); break;
+    case 2: OUT3(s); break;
+    case 3: OUT4(s); break;
+    case 4: OUT5(s); break;
+    case 5: OUT6(s); break;
+    case 6: OUT7(s); break;
+    case 7: OUT8(s); break;
+    default: break;
+    }
+}
+
 // main program body
 int main(void)
 {
@@ -109,6 +124,7 @@ int main(void)
 	ds18b20_init(&s[5], &P8OUT, &P8IN, &P8REN, &P8DIR, 3); // sensor 6: P8.3
 
     int sn = 0;
+    int out = 0;
 
 	while(1)
 	{
@@ -130,6 +146,12 @@ int main(void)
 		__delay_cycles(10000000);
 		sn ++;
 		sn %= 6;
+
+		int i;
+		for (i=0;i<8;i++)
+		    out_set(i, (i==out));
+        out ++;
+        out %= 8;
 	}
 
 	return -1;
