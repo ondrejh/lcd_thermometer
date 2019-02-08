@@ -44,21 +44,22 @@
 #include "lcd.h"
 #include "ds18b20.h"
 
+const uint8_t decimal[16] = {0, 1, 1, 2, 3, 3, 4, 4, 5, 6, 6, 7, 8, 8, 9, 9};
+
 // display temperature
 void disp_temp(int temp)
 {
     uint8_t ts=0, t100=0, t10=0, t1=0, t0=0;
-    int t = temp;
+    int16_t t = temp;
 
-    if (t < 0) {t = -t; ts = 1;}
-    t100 = t/2000;
-    t %= 2000;
-    t10 = t/200;
-    t %= 200;
-    t1 = t/20;
-    t %= 20;
-    t0 = t/2;
-    if (t&1) t0 ++;
+    if (t < 0) {ts = 1; t = -t;}
+    t0 = decimal[t & 0x000F];
+    t >>= 4;
+    t100 = t/100;
+    t %= 100;
+    t10 = t/10;
+    t %= 10;
+    t1 = t;
 
     if (ts & t10) showChar('-', pos2);
     else if (t100) showChar('0' + t100, pos2);
